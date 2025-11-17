@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "367681681215",
+    "project_id": "first-project-bb5a9",
+    "storage_bucket": "first-project-bb5a9.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:367681681215:android:759f5c3ca8db55e04a458a",
+        "android_client_info": {
+          "package_name": "com.example.beetle"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBVsLvSUjmEOTInkdFs_Acx8lNjDt0xr30"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
