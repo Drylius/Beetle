@@ -1,8 +1,6 @@
+import 'package:beetle/controllers/load_registrations.dart';
+import 'package:beetle/models/shuttle_slot_model.dart';
 import 'package:flutter/material.dart';
-// import 'package:intl/intl.dart';
-import 'package:beetle/models/shuttle_schedule_model.dart';
-// import 'package:beetle/models/shuttle_registration_model.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ScheduleViewScreen extends StatefulWidget {
   final String originCampus;
@@ -14,87 +12,15 @@ class ScheduleViewScreen extends StatefulWidget {
 }
 
 class _ScheduleViewScreenState extends State<ScheduleViewScreen> {
-  late Future<List<ShuttleSchedule>> _todaySchedulesFuture;
+  late Future<List<ShuttleSlot>> _todaySchedulesFuture;
 
   @override
   void initState() {
     super.initState();
-    _todaySchedulesFuture = _loadSchedulesWithRegistrations();
-  }
-
-  /// ✅ NEW: Fetch schedules ONLY IF users registered today
-  Future<List<ShuttleSchedule>> _loadSchedulesWithRegistrations() async {
-    DateTime today = DateTime.now().add(const Duration(days: 3));
-
-    final startOfDay = DateTime(today.year, today.month, today.day);
-    final endOfDay = startOfDay.add(const Duration(days: 1));
-
-    final registrationSnapshot = await FirebaseFirestore.instance
-        .collection("shuttle_registrations")
-        .where(
-          "tripDate",
-          isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay),
-        )
-        .where("tripDate", isLessThan: Timestamp.fromDate(endOfDay))
-        .orderBy("tripDate")
-        .get();
-
-    if (registrationSnapshot.docs.isEmpty) {
-      return [];
-    }
-
-    // Extract scheduleIds based on registration order (sorted by tripDate)
-    final scheduleIdsOrderedByTripDate = <String>[];
-
-    for (var doc in registrationSnapshot.docs) {
-      final id = doc["scheduleId"] as String;
-
-      if (!scheduleIdsOrderedByTripDate.contains(id)) {
-        scheduleIdsOrderedByTripDate.add(id);
-      }
-    }
-
-    final schedulesSnapshot = await FirebaseFirestore.instance
-        .collection("shuttle_schedules")
-        .where(FieldPath.documentId, whereIn: scheduleIdsOrderedByTripDate)
-        .get();
-
-    final allSchedules = schedulesSnapshot.docs.map((doc) {
-      final data = doc.data();
-      data["id"] = doc.id;
-      return ShuttleSchedule.fromJson(data);
-    }).toList();
-
-    // Filter first
-    final filteredSchedules = allSchedules.where((s) {
-      return s.route.originCampus.name.toLowerCase() ==
-          widget.originCampus.toLowerCase();
-    }).toList();
-
-    if (filteredSchedules.isEmpty) {
-      return [];
-    }
-
-    // Then sort based on tripDate order
-    filteredSchedules.sort((a, b) {
-      return scheduleIdsOrderedByTripDate
-          .indexOf(a.id)
-          .compareTo(scheduleIdsOrderedByTripDate.indexOf(b.id));
-    });
-
-    final scheduleWithRegistration = await FirebaseFirestore.instance.collection("shuttle_slots").where(
-      'schedule.id',
-      whereIn: filteredSchedules.map((s) => s.id).toList(),
-    ).where(
-      'status',
-      whereIn: ['standby'],
-    ).get();
-
-    final activeSchedule = filteredSchedules.where((schedule) {
-      return scheduleWithRegistration.docs.any((doc) => doc['schedule.id'] == schedule.id);
-    }).toList();
-
-    return activeSchedule;
+    final loadRegistrations = LoadRegistrations();
+    _todaySchedulesFuture = loadRegistrations.loadSchedulesWithRegistrations(
+      widget.originCampus,
+    );
   }
 
   String _formatTime(dynamic time) {
@@ -106,10 +32,22 @@ class _ScheduleViewScreenState extends State<ScheduleViewScreen> {
     return "-";
   }
 
+  Color _statusColor(int registered, int capacity) {
+    if (registered >= capacity) return Colors.red.shade400;
+    if (registered / capacity > 0.7) return Colors.orange.shade400;
+    return Colors.green.shade500;
+  }
+
+  String _statusText(int registered, int capacity) {
+    if (registered >= capacity) return "Full";
+    if (registered / capacity > 0.7) return "Almost Full";
+    return "Available";
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FutureBuilder<List<ShuttleSchedule>>(
+      body: FutureBuilder<List<ShuttleSlot>>(
         future: _todaySchedulesFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -117,15 +55,16 @@ class _ScheduleViewScreenState extends State<ScheduleViewScreen> {
           }
 
           if (snapshot.hasError) {
-            return Center(child: Text("Terjadi kesalahan: ${snapshot.error}"));
+            return Center(child: Text("Error: ${snapshot.error}"));
           }
 
-          final schedules = snapshot.data ?? [];
+          final slots = snapshot.data ?? [];
 
-          if (schedules.isEmpty) {
+          if (slots.isEmpty) {
             return const Center(
               child: Text(
-                "Tidak ada shuttle yang memiliki pendaftaran hari ini.",
+                "No available schedules for today.",
+                style: TextStyle(fontSize: 16),
               ),
             );
           }
@@ -133,21 +72,129 @@ class _ScheduleViewScreenState extends State<ScheduleViewScreen> {
           return ListView.separated(
             padding: const EdgeInsets.all(16),
             separatorBuilder: (_, __) => const SizedBox(height: 12),
-            itemCount: schedules.length,
+            itemCount: slots.length,
             itemBuilder: (context, index) {
-              final schedule = schedules[index];
+              final slot = slots[index];
+              final route = slot.route;
+              final schedule = slot.schedule;
+              final registeredCount = slot.totalSeats - slot.availableSeats;
+              final capacity = slot.totalSeats;
 
-              return Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+              Color statusColor(String status) {
+                switch (status) {
+                  case "standby":
+                    return Colors.blue;
+                  case "on the way":
+                    return Colors.orange;
+                  case "completed":
+                    return Colors.green;
+                  default:
+                    return Colors.grey;
+                }
+              }
+
+              return Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      blurRadius: 10,
+                      offset: const Offset(0, 5),
+                      color: Colors.black.withOpacity(0.08),
+                    ),
+                  ],
                 ),
-                elevation: 3,
-                child: ListTile(
-                  title: Text(
-                    '${schedule.route.originCampus.name} → ${schedule.route.destinationCampus.name}',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(16),
+                    onTap: () {},
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Route Title
+                          Text(
+                            "${route.originCampus.name} → ${route.destinationCampus.name}",
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+
+                          const SizedBox(height: 8),
+
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.schedule,
+                                size: 20,
+                                color: Colors.grey.shade600,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                _formatTime(schedule.departureTime),
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 12),
+
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              // capacity
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.people_alt_rounded,
+                                    size: 20,
+                                    color: Colors.grey.shade600,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    "$registeredCount / $capacity seats",
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.grey.shade800,
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                              // SLOT STATUS CHIP
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: statusColor(
+                                    slot.status,
+                                  ).withOpacity(0.15),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  slot.status.toUpperCase(),
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: statusColor(slot.status),
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                  subtitle: Text('${_formatTime(schedule.departureTime)}'),
                 ),
               );
             },

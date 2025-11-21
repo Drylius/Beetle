@@ -27,6 +27,21 @@ class ShuttleSlot {
     this.status = "standby",   // <--- NEW (default value)
   });
 
+  factory ShuttleSlot.fromFirestore(DocumentSnapshot doc) {
+    // 1. Ekstrak data mentah
+    final data = doc.data() as Map<String, dynamic>?;
+
+    if (data == null) {
+      throw StateError("Document data for slot ID ${doc.id} is null.");
+    }
+
+    // 2. Suntikkan ID dokumen ke dalam map data
+    data['id'] = doc.id; 
+
+    // 3. Panggil factory fromJson yang sudah ada
+    return ShuttleSlot.fromJson(data);
+  }
+
   /// Create ShuttleSlot from Firestore document or JSON
   factory ShuttleSlot.fromJson(Map<String, dynamic> json) {
     Timestamp? dateTimestamp = json['date'] is Timestamp ? json['date'] : null;

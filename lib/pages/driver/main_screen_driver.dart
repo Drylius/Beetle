@@ -1,7 +1,12 @@
+import 'package:beetle/pages/profile/profile_screen.dart';
+import 'package:beetle/pages/selection/campus_selection_screen.dart';
 import 'package:flutter/material.dart';
 
 class MainScreenDriver extends StatefulWidget {
-  const MainScreenDriver({super.key});
+  final String userId;
+  final String role;
+
+  const MainScreenDriver({super.key, required this.userId, required this.role});
 
   @override
   State<MainScreenDriver> createState() => _MainScreenDriverState();
@@ -9,18 +14,29 @@ class MainScreenDriver extends StatefulWidget {
 
 class _MainScreenDriverState extends State<MainScreenDriver> {
   int _selectedIndex = 0;
+  late List<Widget> _screens; 
 
-  final List<Widget> _screens = [
-    Center(child: Text("Driver: Today's Shuttle Schedule")),
-    Center(child: Text("Driver: QR Check-in / Scan Page")),
-    Center(child: Text("Driver: Profile / Logout")),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    // 2. Initialize the list here, inside initState,
+    //    where 'widget' is guaranteed to be available.
+    _screens = [
+      SelectCampusScreen(
+        isRegister: false,
+        // ⭐️ FIX: widget is now accessible here
+        userId: widget.userId,
+        role: widget.role,
+      ),
+      ProfileScreen(),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("BeeTle Driver"),
+        title: const Center(child: Text("BeeTle Driver")),
         backgroundColor: Colors.orange,
       ),
 
@@ -31,16 +47,9 @@ class _MainScreenDriverState extends State<MainScreenDriver> {
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.directions_bus),
-            label: "Today's Shuttle",
+            label: "My Schedule",
           ),
-          NavigationDestination(
-            icon: Icon(Icons.qr_code_scanner),
-            label: "Scan",
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.person),
-            label: "Profile",
-          ),
+          NavigationDestination(icon: Icon(Icons.person), label: "Profile"),
         ],
         onDestinationSelected: (index) {
           setState(() {

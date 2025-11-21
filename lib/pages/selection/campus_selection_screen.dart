@@ -4,8 +4,10 @@ import 'package:beetle/widgets/image_background.dart';
 
 class SelectCampusScreen extends StatelessWidget {
   final bool isRegister;
+  final String? userId;
+  final String? role;
 
-  const SelectCampusScreen({super.key, required this.isRegister});
+  const SelectCampusScreen({super.key, required this.isRegister, this.userId, this.role});
 
   String getTitleText() {
     return isRegister
@@ -21,7 +23,7 @@ class SelectCampusScreen extends StatelessWidget {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (ctx) =>
-            ChoosenAction(isRegister: isRegister, campusName: campusName),
+            ChoosenAction(isRegister: isRegister, campusName: campusName, userId: userId, role: role,),
       ),
     );
   }

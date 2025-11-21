@@ -45,7 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
       } else if (user.role == "driver") {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => const MainScreenDriver()),
+          MaterialPageRoute(builder: (_) => MainScreenDriver(userId: user.id, role: user.role,)),
         );
       } else {
         Navigator.pushReplacement(

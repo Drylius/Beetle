@@ -43,7 +43,7 @@ class AuthWrapper extends StatelessWidget {
             final role = doc['role'] ?? "user"; // fallback
 
             if (role == "driver") {
-              return const MainScreenDriver();
+              return MainScreenDriver(userId: uid, role: role,);
             } else if (role == "admin") {
               return const MainScreenAdmin();
             } else {
