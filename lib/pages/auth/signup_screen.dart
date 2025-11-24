@@ -31,9 +31,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
       if (!mounted) return;
 
-      Navigator.pushReplacement(
+      Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (_) => MainScreenUser(userId: user.id)),
+        // Predikat (kondisi): Route<dynamic> route) => false
+        // Ini memastikan tidak ada route lama yang dipertahankan.
+        (Route<dynamic> route) => false, 
       );
     } catch (e) {
       ScaffoldMessenger.of(context)
