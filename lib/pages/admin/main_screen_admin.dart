@@ -1,3 +1,5 @@
+import 'package:beetle/pages/admin/admin_schedule_window_screen.dart';
+import 'package:beetle/pages/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 
 class MainScreenAdmin extends StatefulWidget {
@@ -12,8 +14,8 @@ class _MainScreenAdminState extends State<MainScreenAdmin> {
 
   final List<Widget> _screens = [
     Center(child: Text("Admin Dashboard")),
-    Center(child: Text("Admin: Manage Shuttle Scheduling")),
-    Center(child: Text("Admin: Profile / Logout")),
+    AdminScheduleWindowScreen(),
+    ProfileScreen(),
   ];
 
   @override

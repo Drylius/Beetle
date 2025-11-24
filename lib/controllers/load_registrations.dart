@@ -85,6 +85,7 @@ class LoadRegistrations {
     // 1. Load all registrations for today
     final registrationSnapshot = await _firestore
         .collection("shuttle_registrations")
+        .where("status", isEqualTo: "Booked")
         .where(
           "tripDate",
           isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay),
