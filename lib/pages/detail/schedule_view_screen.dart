@@ -32,18 +32,6 @@ class _ScheduleViewScreenState extends State<ScheduleViewScreen> {
     return "-";
   }
 
-  Color _statusColor(int registered, int capacity) {
-    if (registered >= capacity) return Colors.red.shade400;
-    if (registered / capacity > 0.7) return Colors.orange.shade400;
-    return Colors.green.shade500;
-  }
-
-  String _statusText(int registered, int capacity) {
-    if (registered >= capacity) return "Full";
-    if (registered / capacity > 0.7) return "Almost Full";
-    return "Available";
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

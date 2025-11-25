@@ -6,6 +6,8 @@ import 'package:beetle/models/shuttle_registration_model.dart';
 import 'package:beetle/repositories/shuttle_repository.dart';
 import 'package:beetle/widgets/schedule_card.dart';
 import 'package:beetle/pages/my_reservation/my_reservation_screen.dart';
+import 'package:beetle/repositories/schedule_window_repo.dart';
+import 'package:beetle/models/schedule_window_model.dart';
 
 class CalendarViewScreen extends StatefulWidget {
   final String originCampus;
@@ -18,6 +20,9 @@ class CalendarViewScreen extends StatefulWidget {
 
 class _CalendarViewScreenState extends State<CalendarViewScreen> {
   DateTime _selectedDate = DateTime.now().add(const Duration(days: 1));
+  DateTime? firstSelectable;
+  DateTime? lastSelectable;
+
   final ShuttleRepository _repository = ShuttleRepository();
 
   String get formattedDate =>
@@ -29,33 +34,17 @@ class _CalendarViewScreenState extends State<CalendarViewScreen> {
     });
   }
 
-  /// ✅ Helper untuk mengecek apakah tanggal yang dipilih adalah D-2, D-3, dst.
-  bool _isBeyondDminusOne(DateTime selected) {
+  /// ❌ User cannot register for TODAY (D-0)
+  bool _isToday(DateTime selected) {
     final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
 
-    // 1. Dapatkan tanggal hari ini (tengah malam, 00:00:00)
-    final todayMidnight = DateTime(now.year, now.month, now.day);
+    final picked = DateTime(selected.year, selected.month, selected.day);
 
-    // 2. Dapatkan tanggal yang dipilih (tengah malam)
-    final selectedMidnight = DateTime(
-      selected.year,
-      selected.month,
-      selected.day,
-    );
-
-    if(selectedMidnight.isAtSameMomentAs(todayMidnight) || selectedMidnight.isBefore(todayMidnight)){
-      return true;
-    }
-    return false;
-    // 3. Hitung selisih hari (Duration)
-    // final difference = selectedMidnight.difference(todayMidnight);
-
-    // 4. Cek: Jika selisihnya lebih besar dari 1 hari (yaitu, 2 hari atau lebih)
-    // D-2 (lusa) = 2 hari, D-3 = 3 hari, dst.
-    // return difference.inDays > 1;
+    return picked.isAtSameMomentAs(today);
   }
 
-  /// ✅ Helper to check if selected date is D-1 relative to today
+  /// ✔ Check if selected date is D-1 (tomorrow)
   bool _isDminusOne(DateTime selected) {
     final now = DateTime.now();
     final tomorrow = DateTime(
@@ -64,16 +53,12 @@ class _CalendarViewScreenState extends State<CalendarViewScreen> {
       now.day,
     ).add(const Duration(days: 1));
 
-    final selectedMidnight = DateTime(
-      selected.year,
-      selected.month,
-      selected.day,
-    );
+    final picked = DateTime(selected.year, selected.month, selected.day);
 
-    return selectedMidnight.isAtSameMomentAs(tomorrow);
+    return picked.isAtSameMomentAs(tomorrow);
   }
 
-  /// ✅ Helper to check if current time is after deadline (14:00)
+  /// ✔ Check if current time is past 14:00
   bool _isPastDeadline() {
     final now = DateTime.now();
     return now.hour >= 14;
@@ -85,20 +70,20 @@ class _CalendarViewScreenState extends State<CalendarViewScreen> {
       // 🔥 Use logged in user ID
       final userId = FirebaseAuth.instance.currentUser!.uid;
 
-      // ✅ Check D-1 rule
+      // ❌ If D-1 AND after 14:00 → cannot register
       if (_isDminusOne(_selectedDate) && _isPastDeadline()) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text("Pendaftaran untuk D-1 ditutup pukul 14:00"),
+            content: Text("Pendaftaran untuk besok ditutup pukul 14:00"),
           ),
         );
         return;
       }
 
-      if (_isBeyondDminusOne(_selectedDate)) {
+      if (_isToday(_selectedDate)) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text("Jadwal terpilih sudah selesai"),
+            content: Text("Tidak dapat mendaftar untuk hari ini."),
           ),
         );
         return;
@@ -163,11 +148,108 @@ class _CalendarViewScreenState extends State<CalendarViewScreen> {
     }
   }
 
+  final ScheduleWindowRepository windowRepo = ScheduleWindowRepository();
+  ScheduleWindow? window;
+  String windowState = "loading";
+
+  @override
+  void initState() {
+    super.initState();
+    _loadWindow();
+  }
+
+  Future<void> _loadWindow() async {
+    final data = await windowRepo.getActiveWindow();
+
+    setState(() {
+      window = data;
+
+      if (data == null) {
+        windowState = "no_window";
+        return;
+      }
+
+      final today = DateTime.now();
+
+      // Compute FIRST & LAST selectable
+      firstSelectable = today.isBefore(data.startDate) ? data.startDate : today;
+
+      lastSelectable = data.endDate;
+
+      // Update state (active / upcoming / closed)
+      if (today.isBefore(data.startDate)) {
+        windowState = "upcoming";
+      } else if (today.isAfter(data.endDate)) {
+        windowState = "closed";
+      } else {
+        windowState = "active";
+      }
+    });
+
+    // ⭐ Validate selection AFTER firstSelectable & lastSelectable are set
+    _validateSelectedDate();
+  }
+
+  void _validateSelectedDate() {
+    if (firstSelectable == null || lastSelectable == null) return;
+
+    if (_selectedDate.isBefore(firstSelectable!)) {
+      setState(() => _selectedDate = firstSelectable!);
+    }
+    if (_selectedDate.isAfter(lastSelectable!)) {
+      setState(() => _selectedDate = lastSelectable!);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    // 🔥 If still loading window data
+    if (windowState == "loading") {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    // 🔥 If admin has not set any window
+    if (windowState == "no_window") {
+      return const Center(
+        child: Text(
+          "Pendaftaran belum dibuka oleh admin.",
+          style: TextStyle(fontSize: 16),
+        ),
+      );
+    }
+
+    // 🔥 If window is closed
+    if (windowState == "closed") {
+      return const Center(
+        child: Text(
+          "Pendaftaran telah ditutup. Tunggu jadwal berikutnya.",
+          style: TextStyle(fontSize: 16),
+        ),
+      );
+    }
+
+    final today = DateTime.now();
+
     return Column(
       children: [
-        // Calendar picker
+        // 🔵 Info banner (only in UPCOMING)
+        if (today.isBefore(window!.startDate))
+          Container(
+            width: double.infinity,
+            color: Colors.orange.shade100,
+            padding: const EdgeInsets.all(12),
+            child: Text(
+              "Pendaftaran dimulai pada "
+              "${DateFormat('dd MMM yyyy').format(window!.startDate)}",
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.orange,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+
+        // 🔵 Calendar picker
         Container(
           color: Colors.teal.shade100,
           padding: const EdgeInsets.all(12),
@@ -180,8 +262,8 @@ class _CalendarViewScreenState extends State<CalendarViewScreen> {
               const SizedBox(height: 8),
               CalendarDatePicker(
                 initialDate: _selectedDate,
-                firstDate: DateTime.now().subtract(const Duration(days: 0)),
-                lastDate: DateTime.now().add(const Duration(days: 30)),
+                firstDate: firstSelectable!,
+                lastDate: lastSelectable!,
                 onDateChanged: _onDateChanged,
               ),
             ],
@@ -198,6 +280,7 @@ class _CalendarViewScreenState extends State<CalendarViewScreen> {
 
         const Divider(height: 1),
 
+        // 🔵 Shuttle Slot Stream
         Expanded(
           child: StreamBuilder<List<ShuttleSlot>>(
             stream: _repository.getSlotsByDate(_selectedDate),
@@ -214,7 +297,7 @@ class _CalendarViewScreenState extends State<CalendarViewScreen> {
 
               final slots = snapshot.data ?? [];
 
-              // ✅ Show ALL shuttle schedules that match the selected campus
+              // Filter by origin campus
               final filteredSlots = slots.where((slot) {
                 return slot.route.originCampus.name.trim().toLowerCase() ==
                     widget.originCampus.trim().toLowerCase();
@@ -222,9 +305,7 @@ class _CalendarViewScreenState extends State<CalendarViewScreen> {
 
               if (filteredSlots.isEmpty) {
                 return const Center(
-                  child: Text(
-                    "Belum ada pengguna yang mendaftar untuk jadwal ini.",
-                  ),
+                  child: Text("Jadwal untuk hari yang dipilih tidak tersedia."),
                 );
               }
 

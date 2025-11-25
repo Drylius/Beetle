@@ -5,6 +5,9 @@ import '../home/main_screen_user.dart';
 import '../admin/main_screen_admin.dart';
 import '../driver/main_screen_driver.dart';
 import 'signup_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:beetle/controllers/schedule_window_controller.dart';
+import 'package:beetle/repositories/schedule_window_repo.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -38,14 +41,23 @@ class _LoginScreenState extends State<LoginScreen> {
       }
 
       if (user.role == "admin") {
-        Navigator.pushReplacement(
+        Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => const MainScreenAdmin()),
+          MaterialPageRoute(
+            builder: (_) => ChangeNotifierProvider(
+              create: (_) =>
+                  ScheduleWindowController(ScheduleWindowRepository())
+                    ..loadWindow(),
+              child: const MainScreenAdmin(),
+            ),
+          ),
         );
       } else if (user.role == "driver") {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => MainScreenDriver(userId: user.id, role: user.role,)),
+          MaterialPageRoute(
+            builder: (_) => MainScreenDriver(userId: user.id, role: user.role),
+          ),
         );
       } else {
         Navigator.pushReplacement(
@@ -172,15 +184,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
                       color: Colors.black54.withOpacity(0.3),
-                      borderRadius: BorderRadius.all(Radius.circular(8))
-                      ),
+                      borderRadius: BorderRadius.all(Radius.circular(8)),
+                    ),
                     child: Text(
                       "Don't have an account? Sign Up",
                       style: TextStyle(
                         color: Colors.white,
                         // backgroundColor: Colors.black54.withOpacity(0.3),
                       ),
-                      
                     ),
                   ),
                 ),
