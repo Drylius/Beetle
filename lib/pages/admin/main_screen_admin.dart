@@ -34,11 +34,11 @@ class _MainScreenAdminState extends State<MainScreenAdmin> {
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.dashboard),
-            label: "Dashboard",
+            label: "Assign",
           ),
           NavigationDestination(
             icon: Icon(Icons.settings),
-            label: "Manage",
+            label: "Schedule Window",
           ),
           NavigationDestination(
             icon: Icon(Icons.person),
