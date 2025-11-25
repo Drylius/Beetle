@@ -93,10 +93,10 @@ class _AdminScheduleWindowScreenState
     final window = controller.window;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Pengaturan Jendela Pendaftaran"),
-        backgroundColor: Colors.teal,
-      ),
+      // appBar: AppBar(
+      //   title: const Text("Pengaturan Jendela Pendaftaran"),
+      //   backgroundColor: Colors.teal,
+      // ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: ListView(

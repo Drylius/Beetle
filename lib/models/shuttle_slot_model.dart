@@ -5,13 +5,16 @@ import 'shuttle_schedule_model.dart';
 class ShuttleSlot {
   final String id;
   final DateTime date; // The date of this slot (selected from the calendar)
-  final ShuttleSchedule schedule; // The fixed shuttle schedule (e.g. 08:00, 10:00)
+  final ShuttleSchedule
+  schedule; // The fixed shuttle schedule (e.g. 08:00, 10:00)
   final ShuttleRoute route; // The route for this shuttle
   final int availableSeats; // Number of seats available
   final int totalSeats; // Optional: total number of seats
 
   /// ✅ NEW: driver assigned to the slot
   String? driverId;
+
+  String? bus;
 
   /// ✅ NEW: status (standby, onTheWay, delayed, completed)
   String status;
@@ -23,8 +26,9 @@ class ShuttleSlot {
     required this.route,
     required this.availableSeats,
     required this.totalSeats,
-    this.driverId,             // <--- NEW
-    this.status = "standby",   // <--- NEW (default value)
+    this.driverId, // <--- NEW
+    this.bus,
+    this.status = "standby", // <--- NEW (default value)
   });
 
   factory ShuttleSlot.fromFirestore(DocumentSnapshot doc) {
@@ -36,7 +40,7 @@ class ShuttleSlot {
     }
 
     // 2. Suntikkan ID dokumen ke dalam map data
-    data['id'] = doc.id; 
+    data['id'] = doc.id;
 
     // 3. Panggil factory fromJson yang sudah ada
     return ShuttleSlot.fromJson(data);
@@ -59,8 +63,9 @@ class ShuttleSlot {
           : ShuttleRoute.empty(),
       availableSeats: json['availableSeats'] ?? 0,
       totalSeats: json['totalSeats'] ?? 0,
-      driverId: json['driverId'],                 // ✅ NEW
-      status: json['status'] ?? "standby",        // ✅ NEW
+      driverId: json['driverId'], // ✅ NEW
+      bus: json['bus'], // ✅ NEW
+      status: json['status'] ?? "standby", // ✅ NEW
     );
   }
 
@@ -73,8 +78,9 @@ class ShuttleSlot {
       'route': route.toJson(),
       'availableSeats': availableSeats,
       'totalSeats': totalSeats,
-      'driverId': driverId,                       // ✅ NEW
-      'status': status,                           // ✅ NEW
+      'driverId': driverId, // ✅ NEW
+      'bus': bus,
+      'status': status, // ✅ NEW
     };
   }
 
@@ -87,8 +93,37 @@ class ShuttleSlot {
       route: ShuttleRoute.empty(),
       availableSeats: 0,
       totalSeats: 0,
-      driverId: null,            // ✅ NEW
-      status: "standby",         // ✅ NEW
+      driverId: null, // ✅ NEW
+      bus: null,
+      status: "standby", // ✅ NEW
+    );
+  }
+
+  ShuttleSlot copyWith({
+    String? id,
+    DateTime? date,
+    ShuttleSchedule? schedule,
+    ShuttleRoute? route,
+    int? availableSeats,
+    int? totalSeats,
+    String? driverId,
+    String? bus,
+    String? status,
+  }) {
+    return ShuttleSlot(
+      id: id ?? this.id,
+      date: date ?? this.date,
+      schedule: schedule ?? this.schedule,
+      route: route ?? this.route,
+      availableSeats: availableSeats ?? this.availableSeats,
+      totalSeats: totalSeats ?? this.totalSeats,
+      // For nullable types like driverId and bus, we must use the spread operator
+      // or check if the new value is explicitly null to allow clearing the value.
+      // In this case, since the controller always provides a non-null String?
+      // for the change, we can use the following logic:
+      driverId: driverId ?? this.driverId,
+      bus: bus ?? this.bus,
+      status: status ?? this.status,
     );
   }
 }

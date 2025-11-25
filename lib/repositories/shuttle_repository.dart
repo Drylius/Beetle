@@ -211,6 +211,7 @@ class ShuttleRepository {
       'availableSeats': 20, // or pull from config
       'totalSeats': 20,
       'driverId': null,
+      'bus': null,
       'status': 'standby',
     };
 

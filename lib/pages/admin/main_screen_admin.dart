@@ -1,4 +1,5 @@
 import 'package:beetle/pages/admin/admin_schedule_window_screen.dart';
+import 'package:beetle/pages/admin/admin_slot_assignment_screen.dart';
 import 'package:beetle/pages/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -13,7 +14,7 @@ class _MainScreenAdminState extends State<MainScreenAdmin> {
   int _selectedIndex = 0;
 
   final List<Widget> _screens = [
-    Center(child: Text("Admin Dashboard")),
+    AdminSlotAssignmentScreen(),
     AdminScheduleWindowScreen(),
     ProfileScreen(),
   ];
@@ -22,7 +23,7 @@ class _MainScreenAdminState extends State<MainScreenAdmin> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("BeeTle Admin"),
+        title: const Center(child: Text("BeeTle Admin"),) ,
         backgroundColor: Colors.red,
       ),
 
