@@ -1,6 +1,7 @@
 import 'package:beetle/controllers/load_registrations.dart';
 import 'package:beetle/models/shuttle_slot_model.dart';
 import 'package:flutter/material.dart';
+import 'package:beetle/widgets/schedule_information.dart';
 
 class ScheduleViewScreen extends StatefulWidget {
   final String originCampus;
@@ -35,7 +36,18 @@ class _ScheduleViewScreenState extends State<ScheduleViewScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FutureBuilder<List<ShuttleSlot>>(
+      body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color(0xFF003153), // Navy blue
+                Color(0xFF2BB5A3), // Teal
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        child: FutureBuilder<List<ShuttleSlot>>(
         future: _todaySchedulesFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -97,7 +109,7 @@ class _ScheduleViewScreenState extends State<ScheduleViewScreen> {
                   color: Colors.transparent,
                   child: InkWell(
                     borderRadius: BorderRadius.circular(16),
-                    onTap: () {},
+                    onTap: () => ScheduleInformation.show(context, slot: slot),
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Column(
@@ -188,6 +200,7 @@ class _ScheduleViewScreenState extends State<ScheduleViewScreen> {
             },
           );
         },
+      ),
       ),
     );
   }

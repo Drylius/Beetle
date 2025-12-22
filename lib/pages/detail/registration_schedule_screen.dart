@@ -35,15 +35,18 @@ class ChoosenAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final title = getTitleText();
-    final color = getActionColor();
 
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(
+            color: Colors.white,
+          ),
         title: Text(
           title,
           style: const TextStyle(color: Colors.white),
         ),
-        backgroundColor: color,
+        backgroundColor: const Color.fromARGB(255, 0, 49, 83),
+        foregroundColor: Colors.white,
         centerTitle: true,
       ),
       body:role == 'driver' 

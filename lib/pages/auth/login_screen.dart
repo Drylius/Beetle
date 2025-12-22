@@ -8,6 +8,8 @@ import 'signup_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:beetle/controllers/schedule_window_controller.dart';
 import 'package:beetle/repositories/schedule_window_repo.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -96,13 +98,26 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
-                  "BeeTle Shuttle",
-                  style: TextStyle(
-                    fontFamily: "pacifico",
-                    fontSize: 42,
-                    color: Colors.white,
-                  ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "BEETLE",
+                      style: GoogleFonts.iceberg(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 84,
+                        color: Colors.white,
+                      ),
+                    ),
+                    Text(
+                      "SHUTTLE",
+                      style: GoogleFonts.iceberg(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 42,
+                        color: Colors.white,
+                      )
+                    )
+                  ],
                 ),
                 const SizedBox(height: 30),
 
@@ -129,6 +144,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           labelText: "Email",
                           border: OutlineInputBorder(),
                         ),
+                        textInputAction: TextInputAction.next,
                       ),
                       const SizedBox(height: 14),
 
@@ -140,6 +156,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           labelText: "Password",
                           border: OutlineInputBorder(),
                         ),
+                        textInputAction: TextInputAction.done,
+                        onSubmitted: (_) => _loading ? null : login(),
                       ),
                       const SizedBox(height: 24),
 

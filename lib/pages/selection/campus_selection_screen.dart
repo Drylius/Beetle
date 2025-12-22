@@ -11,8 +11,8 @@ class SelectCampusScreen extends StatelessWidget {
 
   String getTitleText() {
     return isRegister
-        ? 'Pilih Kampus: Pendaftaran Shuttle'
-        : 'Pilih Kampus: Jadwal Hari Ini';
+        ? 'Pendaftaran Shuttle'
+        : 'Jadwal Hari Ini';
   }
 
   Color getActionColor() {
@@ -31,32 +31,47 @@ class SelectCampusScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String titleText = getTitleText();
-    final Color actionColor = getActionColor();
 
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(
+            color: Colors.white,
+          ),
         title: Text(titleText, style: const TextStyle(color: Colors.white)),
-        backgroundColor: actionColor,
+        backgroundColor: const Color.fromARGB(255, 0, 49, 83),
         centerTitle: true,
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ImageBackgroundButton(
-                imagePath: "assets/images/binus-alsut.jpeg",
-                text: "BINUS ALSUT",
-                onPressed: () => navigateToFinalDetail(context, "Alam Sutera"),
-              ),
-              const SizedBox(height: 20),
-              ImageBackgroundButton(
-                imagePath: "assets/images/binus-anggrek.jpeg",
-                text: "BINUS ANGGREK",
-                onPressed: () => navigateToFinalDetail(context, "Anggrek"),
-              ),
-            ],
+      body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color(0xFF003153), // Navy blue
+                Color(0xFF2BB5A3), // Teal
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ImageBackgroundButton(
+                  imagePath: "assets/images/binus-alsut.jpeg",
+                  text: "BINUS ALSUT",
+                  onPressed: () => navigateToFinalDetail(context, "Alam Sutera"),
+                ),
+                const SizedBox(height: 20),
+                ImageBackgroundButton(
+                  imagePath: "assets/images/binus-anggrek.jpeg",
+                  text: "BINUS ANGGREK",
+                  onPressed: () => navigateToFinalDetail(context, "Anggrek"),
+                ),
+              ],
+            ),
           ),
         ),
       ),
