@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:beetle/models/shuttle_slot_model.dart';
 import 'package:beetle/widgets/map_widget.dart';
+import 'package:get/utils.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ScheduleInformation extends StatelessWidget {
@@ -82,7 +83,20 @@ class ScheduleInformation extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text('Driver', style: TextStyle(color: Colors.grey)),
-                          Text(slot.driverId ?? "Unassigned", style: const TextStyle(fontWeight: FontWeight.bold)),
+                          FutureBuilder<String?>(
+                            future: slot.fetchDriverName(),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                return const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2));
+                              }
+                              // Fallback: If name is null but ID exists, show ID. Else Unassigned.
+                              final displayText = snapshot.data ?? (slot.driverId != null ? "ID: ${slot.driverId}" : "Unassigned");
+                              return Text(
+                                displayText,
+                                style: const TextStyle(fontWeight: FontWeight.bold),
+                              );
+                            },
+                          ),
                         ],
                       ),
                       const SizedBox(height: 8),
