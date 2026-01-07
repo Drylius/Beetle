@@ -126,14 +126,6 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 ),
               ),
               const SizedBox(height: 48),
-              const Text(
-                "Where do you want to go?",
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.white70,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
               const SizedBox(height: 24),
               ImageBackgroundButton(
                 imagePath: "assets/images/binus-alsut.jpeg",

@@ -59,6 +59,15 @@ class SelectCampusScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                const Text(
+                "Where do you want to go?",
+                  style: TextStyle(
+                    fontSize: 24,
+                    color: Colors.white70,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              const SizedBox(height: 20),
                 ImageBackgroundButton(
                   imagePath: "assets/images/binus-alsut.jpeg",
                   text: "BINUS ALSUT",

@@ -3,7 +3,6 @@ import 'package:beetle/models/shuttle_slot_model.dart';
 import 'package:beetle/widgets/map_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-
 class ScheduleInformation extends StatelessWidget {
   final ShuttleSlot slot;
 
