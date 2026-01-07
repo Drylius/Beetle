@@ -77,8 +77,8 @@ class _ScheduleViewScreenState extends State<ScheduleViewScreen> {
               final slot = slots[index];
               final route = slot.route;
               final schedule = slot.schedule;
-              final registeredCount = slot.totalSeats - slot.availableSeats;
               final capacity = slot.totalSeats;
+              final availableSeats = slot.availableSeats;
 
               Color statusColor(String status) {
                 switch (status) {
@@ -159,7 +159,7 @@ class _ScheduleViewScreenState extends State<ScheduleViewScreen> {
                                   ),
                                   const SizedBox(width: 6),
                                   Text(
-                                    "$registeredCount / $capacity seats",
+                                    "$availableSeats / $capacity seats",
                                     style: TextStyle(
                                       fontSize: 15,
                                       color: Colors.grey.shade800,

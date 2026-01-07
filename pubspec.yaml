@@ -30,6 +30,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  url_launcher: ^6.1.7
+  url_launcher_ios: ^6.0.20
+  url_launcher_android: ^6.3.28
+  url_launcher_windows: ^3.1.5
   
   dio: ^4.0.0
   flutter_polyline_points: ^3.1.0

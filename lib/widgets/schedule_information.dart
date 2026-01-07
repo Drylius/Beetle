@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:beetle/models/shuttle_slot_model.dart';
 import 'package:beetle/widgets/map_widget.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 
 class ScheduleInformation extends StatelessWidget {
@@ -125,13 +126,36 @@ class ScheduleInformation extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text('Pickup Point', style: TextStyle(color: Colors.grey)),
-                          Text("New DB for map links pls", 
-                            style: const TextStyle(fontWeight: FontWeight.bold
+                          if (slot.route.pickupPoint != null && slot.route.pickupPoint!.isNotEmpty)
+                            InkWell(
+                              onTap: () async {
+                                String url = slot.route.pickupPoint!;
+                                if (!url.startsWith('http')) {
+                                  url = 'https://$url';
+                                }
+                                final uri = Uri.tryParse(url);
+                                if (uri != null) {
+                                  try {
+                                    await launchUrl(uri, mode: LaunchMode.externalApplication);
+                                  } catch (e) {
+                                    debugPrint("Error launching URL: $e");
+                                  }
+                                }
+                              },
+                              child: Text("Location Link",
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.normal,
+                                      fontSize: 12,
+                                      color: Colors.blue,
+                                      decoration: TextDecoration.underline)),
                             )
-                          ),
+                          else
+                            const Text("-",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.normal, fontSize: 12)),
                         ],
                       ),
-                      if(slot.status.toLowerCase() == "standby") ...[ //map link only for "onTheWay" status
+                      if(slot.status.toLowerCase() == "standby") ...[ //map link only for "onTheWay" status, standby for testing.
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton.icon(

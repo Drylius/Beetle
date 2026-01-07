@@ -4,11 +4,13 @@ class ShuttleRoute {
   final String id;
   final Campus originCampus;
   final Campus destinationCampus;
+  final String? pickupPoint; // ✅ NEW: Variable for the map URL
 
   ShuttleRoute({
     required this.id,
     required this.originCampus,
     required this.destinationCampus,
+    this.pickupPoint,
   });
 
   factory ShuttleRoute.empty() {
@@ -16,6 +18,7 @@ class ShuttleRoute {
       id: '',
       originCampus: Campus(id: '', name: ''),
       destinationCampus: Campus(id: '', name: ''),
+      pickupPoint: null,
     );
   }
 
@@ -28,6 +31,7 @@ class ShuttleRoute {
       destinationCampus: json['destinationCampus'] is Map<String, dynamic>
           ? Campus.fromJson(json['destinationCampus'])
           : json['destinationCampus'],
+      pickupPoint: json['pickupPoint'], // ✅ NEW: Read from JSON
     );
   }
 
@@ -36,6 +40,7 @@ class ShuttleRoute {
       'id': id,
       'originCampus': originCampus.toJson(),
       'destinationCampus': destinationCampus.toJson(),
+      'pickupPoint': pickupPoint, // ✅ NEW: Write to JSON
     };
   }
 }

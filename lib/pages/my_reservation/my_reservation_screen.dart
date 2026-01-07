@@ -119,7 +119,7 @@ class MyReservationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Center(child: Text("My Reservations")),
+        title: Center(child: Text("My Reservations")),
         backgroundColor: Colors.teal,
       ),
 
@@ -181,18 +181,6 @@ class MyReservationScreen extends StatelessWidget {
                     slotDate.isAfter(today);
               }).toList();
 
-              // 🎯 Split reservations by routeId
-              final List<ShuttleRegistration> route001Reservations = [];
-              final List<ShuttleRegistration> route002Reservations = [];
-
-              for (var r in upcoming) {
-                if (r.routeId == "route001") {
-                  route001Reservations.add(r);
-                } else if (r.routeId == "route002") {
-                  route002Reservations.add(r);
-                }
-              }
-
               // ⭐ Sort upcoming list by actual date + time
               upcoming.sort((a, b) {
                 final slotA = slots[a.slotId]!;
@@ -219,6 +207,18 @@ class MyReservationScreen extends StatelessWidget {
 
                 return dateTimeA.compareTo(dateTimeB);
               });
+
+              // 🎯 Split reservations by routeId
+              final List<ShuttleRegistration> route001Reservations = [];
+              final List<ShuttleRegistration> route002Reservations = [];
+
+              for (var r in upcoming) {
+                if (r.routeId == "route001") {
+                  route001Reservations.add(r);
+                } else if (r.routeId == "route002") {
+                  route002Reservations.add(r);
+                }
+              }
 
               if (upcoming.isEmpty) {
                 return const Center(

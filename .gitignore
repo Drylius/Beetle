@@ -46,3 +46,9 @@ app.*.map.json
 
 # Add this line to your .gitignore
 lib/firebase_options.dart
+
+# API keys
+lib/secrets.dart
+ios/Runner/AppDelegate.swift
+android/app/src/main/AndroidManifest.xml
+web/index.html
