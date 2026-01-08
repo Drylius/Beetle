@@ -108,7 +108,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                       "$_greeting,",
                       style: const TextStyle(
                         fontSize: 24,
-                        color: Colors.white70,
+                        color: Colors.black,
                         fontWeight: FontWeight.w400,
                       ),
                     ),
@@ -117,7 +117,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                       _userName,
                       style: const TextStyle(
                         fontSize: 36,
-                        color: Colors.white,
+                        color: Colors.black,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.2,
                       ),

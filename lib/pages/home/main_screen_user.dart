@@ -47,19 +47,7 @@ class _MainScreenUserState extends State<MainScreenUser> {
           centerTitle: true,
           backgroundColor: const Color.fromARGB(255, 0, 49, 83),
           foregroundColor: Colors.white,),
-        body: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Color(0xFF003153), // Navy blue
-                Color(0xFF2BB5A3), // Teal
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-          child: [HomePage(), MyReservationScreen(userId: widget.userId), ProfileScreen()][_selectedIndex],
-        ),
+        body: [HomePage(), MyReservationScreen(userId: widget.userId), ProfileScreen()][_selectedIndex],
         bottomNavigationBar: Navigation(
           currentIndex: _selectedIndex,
           onTap: (int index) {

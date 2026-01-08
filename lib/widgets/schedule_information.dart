@@ -167,7 +167,7 @@ class ScheduleInformation extends StatelessWidget {
                                     fontWeight: FontWeight.normal, fontSize: 12)),
                         ],
                       ),
-                      if(slot.status.toLowerCase() == "onTheWay") ...[ //map link only for "onTheWay" status, standby for testing.
+                      if(slot.status == "on the way") ...[ //map link only for "onTheWay" status, standby for testing.
                       const SizedBox(height: 8),
                         SizedBox(
                           width: double.infinity,
