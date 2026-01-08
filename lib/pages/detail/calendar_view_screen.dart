@@ -1,3 +1,4 @@
+import 'package:beetle/pages/home/main_screen_user.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -127,11 +128,12 @@ class _CalendarViewScreenState extends State<CalendarViewScreen> {
           ),
         );
 
-        Navigator.push(
+        Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
-            builder: (_) => MyReservationScreen(userId: registration.userId),
+            builder: (_) => MainScreenUser(userId: registration.userId, index: 1,),
           ),
+          (Route<dynamic> route) => false,
         );
       }
     } catch (e) {

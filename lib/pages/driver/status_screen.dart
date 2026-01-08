@@ -72,7 +72,9 @@ class _StatusScreenState extends State<StatusScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text("Confirm Action"),
-        content: Text("Are you sure you want to change status to '$newStatus'?"),
+        content: Text(
+          "Are you sure you want to change status to '$newStatus'?",
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
@@ -145,7 +147,33 @@ class _StatusScreenState extends State<StatusScreen> {
       body: FutureBuilder<ShuttleSlot>(
         future: _slotFuture,
         builder: (context, snapshot) {
-
+          if (snapshot.hasError) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, color: Colors.red, size: 60),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(
+                      "Error: ${snapshot.error}",
+                    ), // This will likely say "Slot not found"
+                  ),
+                  ElevatedButton(
+                    onPressed: () => setState(() {
+                      _slotFuture = loader.getSlotDetails(
+                        widget.schedule,
+                        widget.today,
+                        "",
+                        widget.slotId,
+                      );
+                    }),
+                    child: const Text("Retry"),
+                  ),
+                ],
+              ),
+            );
+          }
           if (!snapshot.hasData) {
             if (snapshot.hasError) {
               return Center(child: Text("Error: ${snapshot.error}"));
@@ -182,12 +210,12 @@ class _StatusScreenState extends State<StatusScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-
                 // Header Card
                 Card(
                   elevation: 4,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16)),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.all(20),
                     child: Column(
@@ -196,8 +224,8 @@ class _StatusScreenState extends State<StatusScreen> {
                         Text(
                           "${slot.route.originCampus.name} → ${slot.route.destinationCampus.name}",
                           style: const TextStyle(
-                            fontSize: 22, 
-                            fontWeight: FontWeight.bold
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                         const SizedBox(height: 6),
@@ -212,7 +240,9 @@ class _StatusScreenState extends State<StatusScreen> {
 
                         // Status Chip
                         Chip(
-                          backgroundColor: statusColor(slot.status).withOpacity(0.15),
+                          backgroundColor: statusColor(
+                            slot.status,
+                          ).withOpacity(0.15),
                           avatar: Icon(
                             statusIcon(slot.status),
                             color: statusColor(slot.status),
@@ -224,7 +254,7 @@ class _StatusScreenState extends State<StatusScreen> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),
@@ -236,18 +266,23 @@ class _StatusScreenState extends State<StatusScreen> {
                 Card(
                   elevation: 3,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16)),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text("Seats Available",
-                            style: TextStyle(fontSize: 16)),
+                        const Text(
+                          "Seats Available",
+                          style: TextStyle(fontSize: 16),
+                        ),
                         Text(
                           "${slot.availableSeats}/${slot.totalSeats}",
                           style: const TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     ),

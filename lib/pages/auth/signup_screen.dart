@@ -63,83 +63,107 @@ class _SignUpScreenState extends State<SignUpScreen> {
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(18),
-              ),
-              child: Column(
-                children: [
-                  const Text(
-                    "Create Account",
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                    ),
+            child: Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(18),
                   ),
-                  const SizedBox(height: 20),
-
-                  TextField(
-                    controller: _nameController,
-                    decoration: const InputDecoration(
-                      labelText: "Full Name",
-                      prefixIcon: Icon(Icons.person),
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-
-                  TextField(
-                    controller: _studentIdController,
-                    decoration: const InputDecoration(
-                      labelText: "Student ID",
-                      prefixIcon: Icon(Icons.badge),
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-
-                  TextField(
-                    controller: _emailController,
-                    decoration: const InputDecoration(
-                      labelText: "Email",
-                      prefixIcon: Icon(Icons.email),
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-
-                  TextField(
-                    controller: _passwordController,
-                    obscureText: true,
-                    decoration: const InputDecoration(
-                      labelText: "Password",
-                      prefixIcon: Icon(Icons.lock),
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-
-                  SizedBox(
-                    width: double.infinity,
-                    height: 48,
-                    child: ElevatedButton(
-                      onPressed: _loading ? null : signUp,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF003153),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                  child: Column(
+                    children: [
+                      const Text(
+                        "Create Account",
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                      child: _loading
-                          ? const CircularProgressIndicator(color: Colors.white)
-                          : const Text("Sign Up", style: TextStyle(fontSize: 18, color: Color.fromARGB(255, 95, 232, 253))),
+                      const SizedBox(height: 20),
+                
+                      TextField(
+                        controller: _nameController,
+                        decoration: const InputDecoration(
+                          labelText: "Full Name",
+                          prefixIcon: Icon(Icons.person),
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                
+                      TextField(
+                        controller: _studentIdController,
+                        decoration: const InputDecoration(
+                          labelText: "Student ID",
+                          prefixIcon: Icon(Icons.badge),
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                
+                      TextField(
+                        controller: _emailController,
+                        decoration: const InputDecoration(
+                          labelText: "Email",
+                          prefixIcon: Icon(Icons.email),
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                
+                      TextField(
+                        controller: _passwordController,
+                        obscureText: true,
+                        decoration: const InputDecoration(
+                          labelText: "Password",
+                          prefixIcon: Icon(Icons.lock),
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                
+                      SizedBox(
+                        width: double.infinity,
+                        height: 48,
+                        child: ElevatedButton(
+                          onPressed: _loading ? null : signUp,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF003153),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: _loading
+                              ? const CircularProgressIndicator(color: Colors.white)
+                              : const Text("Sign Up", style: TextStyle(fontSize: 18, color: Color.fromARGB(255, 95, 232, 253))),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: Colors.black54.withOpacity(0.3),
+                      borderRadius: BorderRadius.all(Radius.circular(8)),
                     ),
-                  )
-                ],
-              ),
+                    child: Text(
+                      "Have an account? Log In",
+                      style: TextStyle(
+                        color: Colors.white,
+                        // backgroundColor: Colors.black54.withOpacity(0.3),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
+            
           ),
         ),
       ),

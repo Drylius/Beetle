@@ -11,8 +11,8 @@ class SelectCampusScreen extends StatelessWidget {
 
   String getTitleText() {
     return isRegister
-        ? 'Pilih Kampus: Pendaftaran Shuttle'
-        : 'Pilih Kampus: Jadwal Hari Ini';
+        ? 'Pendaftaran Shuttle'
+        : 'Jadwal Hari Ini';
   }
 
   Color getActionColor() {
@@ -31,12 +31,14 @@ class SelectCampusScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String titleText = getTitleText();
-    final Color actionColor = getActionColor();
 
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(
+            color: Colors.white,
+          ),
         title: Text(titleText, style: const TextStyle(color: Colors.white)),
-        backgroundColor: actionColor,
+        backgroundColor: const Color.fromARGB(255, 0, 49, 83),
         centerTitle: true,
       ),
       body: Center(
@@ -45,6 +47,15 @@ class SelectCampusScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              const Text(
+              "Select pickup?",
+                style: TextStyle(
+                  fontSize: 24,
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            const SizedBox(height: 20),
               ImageBackgroundButton(
                 imagePath: "assets/images/binus-alsut.jpeg",
                 text: "BINUS ALSUT",

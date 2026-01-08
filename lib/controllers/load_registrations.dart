@@ -48,7 +48,11 @@ class LoadRegistrations {
     // final slotSnapshot = await _firestore
     //     .collection("shuttle_slots")
     //     .where("schedule.id", isEqualTo: schedule.id)
-    //     .where("date", isEqualTo: fullDate)
+    //     .where(
+    //       "date",
+    //       isGreaterThanOrEqualTo: Timestamp.fromDate(startOfMinute),
+    //     )
+    //     .where("date", isLessThan: Timestamp.fromDate(endOfMinute))
     //     .limit(1)
     //     .get();
     // // Tipe: QuerySnapshot
