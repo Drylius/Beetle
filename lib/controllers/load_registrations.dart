@@ -14,49 +14,78 @@ class LoadRegistrations {
     ShuttleSchedule schedule,
     bool today,
     String newStatus,
+    String slotId,
   ) async {
-    DateTime now = DateTime.now();
-    // var startOfDay = DateTime(now.year, now.month, now.day);
+    try {
+      final doc = await _firestore
+          .collection("shuttle_slots")
+          .doc(slotId)
+          .get();
 
-    if (today == false) {
-      now = now.add(const Duration(days: 1));
-      // endOfDay = endOfDay.add(const Duration(days: 1));
+      if (!doc.exists) {
+        throw Exception("Dokumen slot tidak ditemukan di database.");
+      }
+
+      return ShuttleSlot.fromFirestore(doc);
+    } catch (e) {
+      throw Exception("Gagal memuat detail slot: $e");
     }
-    // var endOfDay = startOfDay.add(const Duration(days: 1));
+    // DateTime now = DateTime.now();
+    // // var startOfDay = DateTime(now.year, now.month, now.day);
 
-    final parts = schedule.departureTime.split(':');
-    final hour = int.tryParse(parts[0]) ?? 0;
-    final minute = int.tryParse(parts[1]) ?? 0;
-    final fullDate = DateTime(now.year, now.month, now.day, hour, minute);
+    // if (today == false) {
+    //   now = now.add(const Duration(days: 1));
+    //   // endOfDay = endOfDay.add(const Duration(days: 1));
+    // }
+    // // var endOfDay = startOfDay.add(const Duration(days: 1));
 
-    // 1. Lakukan Query untuk mendapatkan QuerySnapshot
-    final slotSnapshot = await _firestore
-        .collection("shuttle_slots")
-        .where("schedule.id", isEqualTo: schedule.id)
-        .where("date", isEqualTo: fullDate)
-        .limit(1)
-        .get();
-    // Tipe: QuerySnapshot
+    // final parts = schedule.departureTime.split(':');
+    // final hour = int.tryParse(parts[0]) ?? 0;
+    // final minute = int.tryParse(parts[1]) ?? 0;
+    // final fullDate = DateTime(now.year, now.month, now.day, hour, minute);
 
-    // 2. Cek apakah ada dokumen yang ditemukan
-    if (slotSnapshot.docs.isEmpty) {
-      // Penanganan jika slot tidak ditemukan
-      throw Exception("Slot perjalanan tidak ditemukan untuk jadwal ini.");
-    }
+    // // Create a 1-minute window to account for millisecond differences
+    // final startOfMinute = DateTime(
+    //   fullDate.year,
+    //   fullDate.month,
+    //   fullDate.day,
+    //   hour,
+    //   minute,
+    // );
+    // final endOfMinute = startOfMinute.add(const Duration(minutes: 1));
 
-    // 3. Ambil DocumentSnapshot pertama dari koleksi hasil
-    final DocumentSnapshot slotDoc = slotSnapshot.docs.first;
-    final slotId = slotDoc.id;
+    // // 1. Lakukan Query untuk mendapatkan QuerySnapshot
+    // final slotSnapshot = await _firestore
+    //     .collection("shuttle_slots")
+    //     .where("schedule.id", isEqualTo: schedule.id)
+    //     .where(
+    //       "date",
+    //       isGreaterThanOrEqualTo: Timestamp.fromDate(startOfMinute),
+    //     )
+    //     .where("date", isLessThan: Timestamp.fromDate(endOfMinute))
+    //     .limit(1)
+    //     .get();
+    // // Tipe: QuerySnapshot
 
-    // updateSlotStatus(slotId, newStatus);
+    // // 2. Cek apakah ada dokumen yang ditemukan
+    // if (slotSnapshot.docs.isEmpty) {
+    //   // Penanganan jika slot tidak ditemukan
+    //   throw Exception("Slot perjalanan tidak ditemukan untuk jadwal ini.");
+    // }
 
-    final DocumentSnapshot updatedDoc = await _firestore
-        .collection("shuttle_slots")
-        .doc(slotId)
-        .get();
-    final ShuttleSlot updatedSlot = ShuttleSlot.fromFirestore(updatedDoc);
+    // // 3. Ambil DocumentSnapshot pertama dari koleksi hasil
+    // final DocumentSnapshot slotDoc = slotSnapshot.docs.first;
+    // final slotId = slotDoc.id;
 
-    return updatedSlot;
+    // // updateSlotStatus(slotId, newStatus);
+
+    // final DocumentSnapshot updatedDoc = await _firestore
+    //     .collection("shuttle_slots")
+    //     .doc(slotId)
+    //     .get();
+    // final ShuttleSlot updatedSlot = ShuttleSlot.fromFirestore(updatedDoc);
+
+    // return updatedSlot;
   }
 
   Future<void> updateSlotStatus(String slotId, String newStatus) async {

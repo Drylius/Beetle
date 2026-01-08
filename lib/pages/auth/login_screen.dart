@@ -40,6 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
         return;
       }
 
+      // Role based navigation disini bisa dihapus karena sudah di-handle di AuthWrapper
       if (user.role == "admin") {
         Navigator.push(
           context,
@@ -65,6 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
           MaterialPageRoute(builder: (_) => MainScreenUser(userId: user.id)),
         );
       }
+
     } catch (e) {
       ScaffoldMessenger.of(
         context,
