@@ -1,6 +1,8 @@
 import 'package:beetle/controllers/load_registrations.dart';
 import 'package:beetle/models/shuttle_slot_model.dart';
 import 'package:flutter/material.dart';
+import 'package:beetle/pages/livetracking/bus_tracking_screen.dart';
+
 
 class ScheduleViewScreen extends StatefulWidget {
   final String originCampus;
@@ -97,7 +99,34 @@ class _ScheduleViewScreenState extends State<ScheduleViewScreen> {
                   color: Colors.transparent,
                   child: InkWell(
                     borderRadius: BorderRadius.circular(16),
-                    onTap: () {},
+                    onTap: () {
+                      // ✅ 1. Guard clause
+                      if (slot.bus == null || slot.bus!.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Bus belum di-assign untuk trip ini"),
+                          ),
+                        );
+                        return;
+                      }
+
+                      // ✅ 2. Safe navigation
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => BusTrackingScreen(
+                            busId: slot.bus!.trim(), // trim is important
+                            routeName:
+                                "${route.originCampus.name} → ${route.destinationCampus.name}",
+                            departureTime: _formatTime(schedule.departureTime),
+                            driverName: "Driver",
+                            busName: slot.bus!,
+                            status: slot.status,
+                          ),
+                        ),
+                      );
+                    },
+
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Column(

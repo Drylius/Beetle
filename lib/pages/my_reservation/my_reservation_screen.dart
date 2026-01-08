@@ -4,6 +4,8 @@ import 'package:beetle/models/shuttle_registration_model.dart';
 import 'package:beetle/models/shuttle_slot_model.dart';
 import 'package:beetle/models/shuttle_route_model.dart';
 import 'package:intl/intl.dart';
+import 'package:beetle/pages/livetracking/bus_tracking_screen.dart';
+
 
 class MyReservationScreen extends StatelessWidget {
   final String userId;
@@ -78,6 +80,24 @@ class MyReservationScreen extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       elevation: 3,
       child: ListTile(
+        // 👉 TAP TO OPEN LIVE TRACKING
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => BusTrackingScreen(
+                busId: slot.bus!, // ✅ MUST use slot.bus
+                routeName:
+                    "${route.originCampus.name} ➝ ${route.destinationCampus.name}",
+                departureTime: reservation.schedule.departureTime,
+                driverName: "Driver",
+                busName: slot.bus!,
+                status: slot.status,
+              ),
+            ),
+          );
+        },
+        
         title: Text(
           "${route.originCampus.name} ➝ ${route.destinationCampus.name}",
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),

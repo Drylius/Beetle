@@ -55,13 +55,16 @@ class _CalendarViewScreenState extends State<CalendarViewScreen> {
 
     final picked = DateTime(selected.year, selected.month, selected.day);
 
-    return picked.isAtSameMomentAs(tomorrow);
+    // return picked.isAtSameMomentAs(tomorrow);
+    return true;
   }
 
   /// ✔ Check if current time is past 14:00
   bool _isPastDeadline() {
     final now = DateTime.now();
-    return now.hour >= 14;
+    
+    // return now.hour >= 14;
+    return false;
   }
 
   /// ✅ REGISTER SHUTTLE
