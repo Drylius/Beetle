@@ -1,5 +1,6 @@
 // import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../models/shuttle_slot_model.dart';
 import '../../controllers/slot_assignment_controller.dart';
 // import '../../repositories/slot_repository.dart';
@@ -118,7 +119,14 @@ class SlotAssignmentCard extends StatelessWidget {
                 ),
               ),
             ),
-
+            const SizedBox(height: 16),
+            Text(
+                    DateFormat('EEEE, d MMMM yyyy').format(slot.date),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
             const SizedBox(height: 16),
 
             /// ─────────────────────────────────────────────

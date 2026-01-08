@@ -4,6 +4,7 @@ import 'package:beetle/models/shuttle_registration_model.dart';
 import 'package:beetle/models/shuttle_slot_model.dart';
 import 'package:beetle/models/shuttle_route_model.dart';
 import 'package:intl/intl.dart';
+import 'package:beetle/widgets/schedule_information.dart';
 
 class MyReservationScreen extends StatelessWidget {
   final String userId;
@@ -77,30 +78,34 @@ class MyReservationScreen extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       elevation: 3,
-      child: ListTile(
-        title: Text(
-          "${route.originCampus.name} ➝ ${route.destinationCampus.name}",
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-        ),
-        subtitle: Padding(
-          padding: const EdgeInsets.only(top: 6),
-          child: Text(
-            "Date: $formattedDate\nDeparture: ${reservation.schedule.departureTime}",
-            style: const TextStyle(fontSize: 14),
+      child: InkWell(
+        onTap: () => ScheduleInformation.show(context, slot: slot),
+        borderRadius: BorderRadius.circular(16),
+        child: ListTile(
+          title: Text(
+            "${route.originCampus.name} ➝ ${route.destinationCampus.name}",
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
-        ),
-        trailing: reservation.status.toLowerCase() == "booked"
-            ? TextButton(
-                onPressed: () => _showCancelDialog(context, reservation),
-                child: const Text(
-                  "Cancel",
-                  style: TextStyle(color: Colors.red),
+          subtitle: Padding(
+            padding: const EdgeInsets.only(top: 6),
+            child: Text(
+              "Date: $formattedDate\nDeparture: ${reservation.schedule.departureTime}",
+              style: const TextStyle(fontSize: 14),
+            ),
+          ),
+          trailing: reservation.status.toLowerCase() == "booked"
+              ? TextButton(
+                  onPressed: () => _showCancelDialog(context, reservation),
+                  child: const Text(
+                    "Cancel",
+                    style: TextStyle(color: Colors.red),
+                  ),
+                )
+              : const Chip(
+                  label: Text("Cancelled"),
+                  backgroundColor: Colors.grey,
                 ),
-              )
-            : const Chip(
-                label: Text("Cancelled"),
-                backgroundColor: Colors.grey,
-              ),
+        ),
       ),
     );
   }
@@ -172,18 +177,6 @@ class MyReservationScreen extends StatelessWidget {
                     slotDate.isAfter(today);
               }).toList();
 
-              // 🎯 Split reservations by routeId
-              final List<ShuttleRegistration> route001Reservations = [];
-              final List<ShuttleRegistration> route002Reservations = [];
-
-              for (var r in upcoming) {
-                if (r.routeId == "route001") {
-                  route001Reservations.add(r);
-                } else if (r.routeId == "route002") {
-                  route002Reservations.add(r);
-                }
-              }
-
               // ⭐ Sort upcoming list by actual date + time
               upcoming.sort((a, b) {
                 final slotA = slots[a.slotId]!;
@@ -210,6 +203,18 @@ class MyReservationScreen extends StatelessWidget {
 
                 return dateTimeA.compareTo(dateTimeB);
               });
+
+              // 🎯 Split reservations by routeId
+              final List<ShuttleRegistration> route001Reservations = [];
+              final List<ShuttleRegistration> route002Reservations = [];
+
+              for (var r in upcoming) {
+                if (r.routeId == "route001") {
+                  route001Reservations.add(r);
+                } else if (r.routeId == "route002") {
+                  route002Reservations.add(r);
+                }
+              }
 
               if (upcoming.isEmpty) {
                 return const Center(

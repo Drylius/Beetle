@@ -19,6 +19,18 @@ class ShuttleSlot {
   /// ✅ NEW: status (standby, onTheWay, delayed, completed)
   String status;
 
+  /// Helper to fetch driver name asynchronously from the Users collection
+  Future<String?> fetchDriverName() async {
+    if (driverId == null || driverId!.isEmpty) return null;
+    try {
+      final doc = await FirebaseFirestore.instance.collection('users').doc(driverId).get();
+      final data = doc.data();
+      return data?['name'] as String?;
+    } catch (e) {
+      return null;
+    }
+  }
+
   ShuttleSlot({
     required this.id,
     required this.date,

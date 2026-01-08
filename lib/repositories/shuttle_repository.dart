@@ -140,6 +140,19 @@ class ShuttleRepository {
           minute,
         );
 
+        // ✅ FIX: Fetch fresh route data to ensure pickupPoint is up to date
+        // This overrides the stale route data stored in the slot/schedule document
+        ShuttleRoute freshRoute = schedule.route;
+        if (schedule.route.id.isNotEmpty) {
+          final routeDoc = await FirebaseFirestore.instance
+              .collection('shuttle_routes')
+              .doc(schedule.route.id)
+              .get();
+          if (routeDoc.exists) {
+            freshRoute = ShuttleRoute.fromJson({...routeDoc.data()!, 'id': routeDoc.id});
+          }
+        }
+
         // Query real slot
         final realQuery = await FirebaseFirestore.instance
             .collection('shuttle_slots')
@@ -150,7 +163,8 @@ class ShuttleRepository {
 
         if (realQuery.docs.isNotEmpty) {
           final real = realQuery.docs.first;
-          return ShuttleSlot.fromJson({...real.data(), 'id': real.id});
+          // Use copyWith to inject the fresh route
+          return ShuttleSlot.fromJson({...real.data(), 'id': real.id}).copyWith(route: freshRoute);
         }
 
         // Virtual slot
@@ -169,7 +183,7 @@ class ShuttleRepository {
         return ShuttleSlot(
           id: "",
           date: fullDate,
-          route: schedule.route,
+          route: freshRoute, // ✅ Use freshRoute
           schedule: schedule,
           availableSeats: capacity,
           totalSeats: capacity,

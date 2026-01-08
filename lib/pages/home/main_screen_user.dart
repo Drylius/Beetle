@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:beetle/pages/home/home_page_user.dart';
 import 'package:beetle/widgets/navigation_bar.dart';
 import 'package:beetle/repositories/shuttle_repository.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class MainScreenUser extends StatefulWidget {
   MainScreenUser({
@@ -39,13 +40,19 @@ class _MainScreenUserState extends State<MainScreenUser> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Opacity(opacity: 1, child: Text(
-              "BeeTle",
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 24,
-                fontFamily: 'pacifico',
-              )),), 
+          iconTheme: IconThemeData(
+            color: Colors.white,
+          ),
+          title: Opacity(opacity: 1, 
+          child: Text(
+                      "BEETLE",
+                      style: GoogleFonts.iceberg(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 38,
+                        color: Colors.white,
+                      ),
+                    ),
+          ), 
           centerTitle: true,
           backgroundColor: const Color.fromARGB(255, 0, 49, 83),
           foregroundColor: Colors.white,),
