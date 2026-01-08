@@ -21,8 +21,54 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final FocusNode _emailFocusNode = FocusNode();
+  final FocusNode _passwordFocusNode = FocusNode();
+  String? _emailErrorText;
+  String? _passwordErrorText;
   final AuthRepository _authRepo = AuthRepository();
   bool _loading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _emailFocusNode.addListener(() {
+      if (!_emailFocusNode.hasFocus) {
+        _validateEmail();
+      }
+    });
+    _passwordFocusNode.addListener(() {
+      if (!_passwordFocusNode.hasFocus) {
+        _validatePassword();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _emailFocusNode.dispose();
+    _passwordFocusNode.dispose();
+    super.dispose();
+  }
+
+  void _validateEmail() {
+    final email = _emailController.text.trim();
+    if (email.isNotEmpty && !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,}$').hasMatch(email)) {
+      setState(() => _emailErrorText = "Invalid email format");
+    } else {
+      setState(() => _emailErrorText = null);
+    }
+  }
+
+  void _validatePassword() {
+    final password = _passwordController.text;
+    if (password.isNotEmpty && password.length < 6) {
+      setState(() => _passwordErrorText = "Password must be at least 6 characters");
+    } else {
+      setState(() => _passwordErrorText = null);
+    }
+  }
 
   void login() async {
     setState(() => _loading = true);
@@ -70,9 +116,20 @@ class _LoginScreenState extends State<LoginScreen> {
       }
 
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(e.toString())));
+      String message = e.toString();
+      if (message.contains('user-not-found')) {
+        message = "No user found for that email.";
+        setState(() => _emailErrorText = "User not found");
+      } else if (message.contains('wrong-password')) {
+        message = "Wrong password provided.";
+        setState(() => _passwordErrorText = "Wrong password");
+      } else if (message.contains('invalid-credential')) {
+        message = "Invalid email or password.";
+        setState(() => _passwordErrorText = "Wrong password");
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message)),
+      );
     }
 
     setState(() => _loading = false);
@@ -141,24 +198,34 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       TextField(
                         controller: _emailController,
-                        decoration: const InputDecoration(
-                          prefixIcon: Icon(Icons.email),
+                        focusNode: _emailFocusNode,
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(Icons.email),
                           labelText: "Email",
-                          border: OutlineInputBorder(),
+                          // errorText: _emailErrorText,
+                          border: const OutlineInputBorder(),
                         ),
                         textInputAction: TextInputAction.next,
+                        onChanged: (_) {
+                          if (_emailErrorText != null) _validateEmail();
+                        },
                       ),
                       const SizedBox(height: 14),
 
                       TextField(
                         controller: _passwordController,
+                        focusNode: _passwordFocusNode,
                         obscureText: true,
-                        decoration: const InputDecoration(
-                          prefixIcon: Icon(Icons.lock),
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(Icons.lock),
                           labelText: "Password",
-                          border: OutlineInputBorder(),
+                          // errorText: _passwordErrorText,
+                          border: const OutlineInputBorder(),
                         ),
                         textInputAction: TextInputAction.done,
+                        onChanged: (_) {
+                          if (_passwordErrorText != null) _validatePassword();
+                        },
                         onSubmitted: (_) => _loading ? null : login(),
                       ),
                       const SizedBox(height: 24),
