@@ -2,6 +2,7 @@ import 'package:beetle/pages/admin/admin_schedule_window_screen.dart';
 import 'package:beetle/pages/admin/admin_slot_assignment_screen.dart';
 import 'package:beetle/pages/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class MainScreenAdmin extends StatefulWidget {
   const MainScreenAdmin({super.key});
@@ -23,9 +24,22 @@ class _MainScreenAdminState extends State<MainScreenAdmin> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Center(child: Text("BeeTle Admin"),) ,
-        backgroundColor: Colors.red,
-      ),
+          iconTheme: IconThemeData(
+            color: Colors.white,
+          ),
+          title: Opacity(opacity: 1, 
+          child: Text(
+                      "BEETLE ADMIN",
+                      style: GoogleFonts.iceberg(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 38,
+                        color: Colors.white,
+                      ),
+                    ),
+          ), 
+          centerTitle: true,
+          backgroundColor: const Color.fromARGB(255, 83, 17, 0),
+          foregroundColor: Colors.white,),
 
       body: _screens[_selectedIndex],
 

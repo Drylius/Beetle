@@ -4,8 +4,6 @@ import 'package:beetle/models/shuttle_registration_model.dart';
 import 'package:beetle/models/shuttle_slot_model.dart';
 import 'package:beetle/models/shuttle_route_model.dart';
 import 'package:intl/intl.dart';
-import 'package:beetle/pages/livetracking/bus_tracking_screen.dart';
-
 import 'package:beetle/widgets/schedule_information.dart';
 
 class MyReservationScreen extends StatelessWidget {
@@ -120,7 +118,6 @@ class MyReservationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       // ✅ First stream: listen to user's reservations (real-time update)
       body: StreamBuilder<List<ShuttleRegistration>>(
         stream: _repository.getUserRegistrations(userId),
@@ -167,6 +164,12 @@ class MyReservationScreen extends StatelessWidget {
               final upcoming = activeReservations.where((reservation) {
                 final slot = slots[reservation.slotId];
                 if (slot == null) return false;
+
+                final slotStatus = slot.status.toLowerCase();
+                final isValidStatus =
+                    slotStatus == "standby" || slotStatus == "on the way";
+
+                if (!isValidStatus) return false; 
 
                 final slotDate = DateTime(
                   slot.date.year,
@@ -266,16 +269,6 @@ class MyReservationScreen extends StatelessWidget {
                     ),
                   ),
                   if (route001Reservations.isNotEmpty) ...[
-                    const Padding(
-                      padding: EdgeInsets.all(12),
-                      child: Text(
-                        "Anggrek - Alam Sutera Reservations",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
                     ...route001Reservations.map((reservation) {
                       final slot = slots[reservation.slotId];
                       final route = routes[reservation.routeId];

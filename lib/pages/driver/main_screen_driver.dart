@@ -1,6 +1,8 @@
 import 'package:beetle/pages/profile/profile_screen.dart';
 import 'package:beetle/pages/selection/campus_selection_screen.dart';
 import 'package:flutter/material.dart';
+// import 'package:beetle/widgets/navigation_bar.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class MainScreenDriver extends StatefulWidget {
   final String userId;
@@ -36,9 +38,22 @@ class _MainScreenDriverState extends State<MainScreenDriver> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Center(child: Text("BeeTle Driver")),
-        backgroundColor: Colors.orange,
-      ),
+          iconTheme: IconThemeData(
+            color: Colors.white,
+          ),
+          title: Opacity(opacity: 1, 
+          child: Text(
+                      "BEETLE DRIVER",
+                      style: GoogleFonts.iceberg(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 38,
+                        color: Colors.white,
+                      ),
+                    ),
+          ), 
+          centerTitle: true,
+          backgroundColor: const Color.fromARGB(255, 83, 64, 0),
+          foregroundColor: Colors.white,),
 
       body: _screens[_selectedIndex],
 

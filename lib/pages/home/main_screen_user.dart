@@ -11,15 +11,15 @@ class MainScreenUser extends StatefulWidget {
     super.key,
     // required this.appTitle
     required this.userId,
-    this.index
-    });
+    this.index,
+  });
 
   // final String appTitle;
   final String userId;
   final shuttleRepository = ShuttleRepository();
   final int? index;
 
- @override
+  @override
   State<MainScreenUser> createState() {
     return _MainScreenUserState();
   }
@@ -39,32 +39,36 @@ class _MainScreenUserState extends State<MainScreenUser> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          iconTheme: IconThemeData(
-            color: Colors.white,
-          ),
-          title: Opacity(opacity: 1, 
+      appBar: AppBar(
+        iconTheme: IconThemeData(color: Colors.white),
+        title: Opacity(
+          opacity: 1,
           child: Text(
-                      "BEETLE",
-                      style: GoogleFonts.iceberg(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 38,
-                        color: Colors.white,
-                      ),
-                    ),
-          ), 
-          centerTitle: true,
-          backgroundColor: const Color.fromARGB(255, 0, 49, 83),
-          foregroundColor: Colors.white,),
-        body: [HomePage(), MyReservationScreen(userId: widget.userId), ProfileScreen()][_selectedIndex],
-        bottomNavigationBar: Navigation(
-          currentIndex: _selectedIndex,
-          onTap: (int index) {
-            setState(() {
-              _selectedIndex = index;
-            });
-          },
+            "BEETLE",
+            style: GoogleFonts.iceberg(
+              fontWeight: FontWeight.bold,
+              fontSize: 38,
+              color: Colors.white,
+            ),
+          ),
         ),
-      );
+        centerTitle: true,
+        backgroundColor: const Color.fromARGB(255, 0, 49, 83),
+        foregroundColor: Colors.white,
+      ),
+      body: [
+        HomePage(),
+        MyReservationScreen(userId: widget.userId),
+        ProfileScreen(),
+      ][_selectedIndex],
+      bottomNavigationBar: Navigation(
+        currentIndex: _selectedIndex,
+        onTap: (int index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+      ),
+    );
   }
 }

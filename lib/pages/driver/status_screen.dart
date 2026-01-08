@@ -4,7 +4,6 @@ import 'package:beetle/models/shuttle_slot_model.dart';
 import 'package:beetle/controllers/load_registrations.dart';
 import 'package:beetle/pages/driver/driver_trip_tracking_screen.dart';
 
-
 class StatusScreen extends StatefulWidget {
   final ShuttleSchedule schedule;
   final bool today;
@@ -28,44 +27,13 @@ class _StatusScreenState extends State<StatusScreen> {
   @override
   void initState() {
     super.initState();
-    _slotFuture = loader.getSlotDetails(widget.schedule, widget.today, "", widget.slotId);
+    _slotFuture = loader.getSlotDetails(
+      widget.schedule,
+      widget.today,
+      "",
+      widget.slotId,
+    );
   }
-
-  // Future<void> _updateStatus(String slotId, String newStatus) async {
-  //   final bool confirm = await showDialog(
-  //     context: context,
-  //     builder: (ctx) => AlertDialog(
-  //       title: const Text("Confirm Action"),
-  //       content: Text("Are you sure you want to change status to '$newStatus'?"),
-  //       actions: [
-  //         TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text("Cancel")),
-  //         ElevatedButton(onPressed: () => Navigator.pop(ctx, true), child: const Text("Confirm")),
-  //       ],
-  //     ),
-  //   );
-
-  //   if (!confirm) return;
-
-  //   await loader.updateSlotStatus(slotId, newStatus);
-
-  //   // fetch updated slot WITHOUT changing status again
-  //   final updatedSlot = await loader.getSlotDetails(widget.schedule, widget.today, "__NO_UPDATE__");
-
-  //   if (!mounted) return;
-
-  //   if (newStatus == "on the way") {
-  //     await Navigator.push(
-  //       context,
-  //       MaterialPageRoute(
-  //         builder: (_) => DriverTripTrackingScreen(slot: updatedSlot),
-  //       ),
-  //     );
-  //   }
-
-  //   setState(() {
-  //     _slotFuture = loader.getSlotDetails(widget.schedule, widget.today, "");
-  //   });
-  // }
 
   Future<void> _updateStatus(String slotId, String newStatus) async {
     final bool confirm = await showDialog(
@@ -93,26 +61,31 @@ class _StatusScreenState extends State<StatusScreen> {
     await loader.updateSlotStatus(slotId, newStatus);
 
     setState(() {
-      _slotFuture = loader.getSlotDetails(widget.schedule, widget.today, "", widget.slotId);
+      _slotFuture = loader.getSlotDetails(
+        widget.schedule,
+        widget.today,
+        "",
+        widget.slotId,
+      );
     });
   }
-
 
   Future<void> _openTracking(ShuttleSlot slot) async {
     await Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => DriverTripTrackingScreen(slot: slot),
-      ),
+      MaterialPageRoute(builder: (_) => DriverTripTrackingScreen(slot: slot)),
     );
 
     // Refresh slot data after coming back
     setState(() {
-      _slotFuture = loader.getSlotDetails(widget.schedule, widget.today, "",widget.slotId);
+      _slotFuture = loader.getSlotDetails(
+        widget.schedule,
+        widget.today,
+        "",
+        widget.slotId,
+      );
     });
   }
-
-
 
   Color statusColor(String status) {
     switch (status) {
@@ -291,64 +264,103 @@ class _StatusScreenState extends State<StatusScreen> {
 
                 const SizedBox(height: 40),
 
-                // Main Buttons (based on status)
-                if (slot.status == "standby") ...[
+                // Wrap the entire button section
+                if (!widget.today) ...[
+                  // 1. Logic for "Tomorrow" or Future trips
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
+                      backgroundColor: Colors.grey.shade300,
                       padding: const EdgeInsets.symmetric(vertical: 18),
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
-                    onPressed: () async {
-                      await _updateStatus(slot.id, "on the way");
-
-                      final updatedSlot =
-                          await loader.getSlotDetails(widget.schedule, widget.today, "",widget.slotId);
-
-                      if (!mounted) return;
-                      await _openTracking(updatedSlot);
-                    },
-                    child: const Text("Start Trip", style: TextStyle(fontSize: 18)),
-                  ),
-                ] else if (slot.status == "on the way") ...[
-                  // ✅ Resume Tracking
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      padding: const EdgeInsets.symmetric(vertical: 18),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
+                    onPressed: null, // This disables the button
+                    child: const Text(
+                      "Trip only available on schedule date",
+                      style: TextStyle(fontSize: 16, color: Colors.black54),
                     ),
-                    onPressed: () => _openTracking(slot),
-                    child: const Text("Resume Tracking", style: TextStyle(fontSize: 18)),
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  // ✅ Complete Trip
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      padding: const EdgeInsets.symmetric(vertical: 18),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
-                    ),
-                    onPressed: () => _updateStatus(slot.id, "completed"),
-                    child: const Text("Complete Trip", style: TextStyle(fontSize: 18)),
                   ),
                 ] else ...[
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey.shade400,
-                      padding: const EdgeInsets.symmetric(vertical: 18),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
+                  // Main Buttons (based on status)
+                  if (slot.status == "standby") ...[
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        padding: const EdgeInsets.symmetric(vertical: 18),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed: () async {
+                        await _updateStatus(slot.id, "on the way");
+
+                        final updatedSlot = await loader.getSlotDetails(
+                          widget.schedule,
+                          widget.today,
+                          "",
+                          widget.slotId,
+                        );
+
+                        if (!mounted) return;
+                        await _openTracking(updatedSlot);
+                      },
+                      child: const Text(
+                        "Start Trip",
+                        style: TextStyle(fontSize: 18),
+                      ),
                     ),
-                    onPressed: null,
-                    child: const Text("Trip Completed", style: TextStyle(fontSize: 18)),
-                  ),
-                ]
+                  ] else if (slot.status == "on the way") ...[
+                    // ✅ Resume Tracking
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        padding: const EdgeInsets.symmetric(vertical: 18),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed: () => _openTracking(slot),
+                      child: const Text(
+                        "Resume Tracking",
+                        style: TextStyle(fontSize: 18),
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    // ✅ Complete Trip
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        padding: const EdgeInsets.symmetric(vertical: 18),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed: () => _updateStatus(slot.id, "completed"),
+                      child: const Text(
+                        "Complete Trip",
+                        style: TextStyle(fontSize: 18),
+                      ),
+                    ),
+                  ] else ...[
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.grey.shade400,
+                        padding: const EdgeInsets.symmetric(vertical: 18),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed: null,
+                      child: const Text(
+                        "Trip Completed",
+                        style: TextStyle(fontSize: 18),
+                      ),
+                    ),
+                  ],
+                ],
               ],
             ),
           );
