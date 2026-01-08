@@ -63,8 +63,7 @@ class _CalendarViewScreenState extends State<CalendarViewScreen> {
   bool _isPastDeadline() {
     final now = DateTime.now();
     
-    // return now.hour >= 14;
-    return false;
+    return now.hour >= 14;
   }
 
   /// ✅ REGISTER SHUTTLE
