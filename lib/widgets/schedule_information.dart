@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:beetle/models/shuttle_slot_model.dart';
 import 'package:beetle/widgets/map_widget.dart';
-import 'package:get/utils.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ScheduleInformation extends StatelessWidget {
@@ -168,9 +167,11 @@ class ScheduleInformation extends StatelessWidget {
                                     fontWeight: FontWeight.normal, fontSize: 12)),
                         ],
                       ),
-                      if(slot.status.toLowerCase() == "standby") ...[ //map link only for "onTheWay" status, standby for testing.
+                      if(slot.status.toLowerCase() == "onTheWay") ...[ //map link only for "onTheWay" status, standby for testing.
+                      const SizedBox(height: 8),
                         SizedBox(
                           width: double.infinity,
+                          
                           child: ElevatedButton.icon(
                             onPressed: () {
                               Navigator.push(
@@ -184,6 +185,7 @@ class ScheduleInformation extends StatelessWidget {
                             label: const Text("Track Bus Location"),
                           ),
                         ),
+                        const SizedBox(height: 8),
                       ],
                     ],
                   ),

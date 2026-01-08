@@ -60,7 +60,7 @@ class SelectCampusScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Text(
-                "Where do you want to go?",
+                "Select pickup?",
                   style: TextStyle(
                     fontSize: 24,
                     color: Colors.white70,
