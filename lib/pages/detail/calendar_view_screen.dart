@@ -56,8 +56,7 @@ class _CalendarViewScreenState extends State<CalendarViewScreen> {
 
     final picked = DateTime(selected.year, selected.month, selected.day);
 
-    // return picked.isAtSameMomentAs(tomorrow);
-    return true;
+    return picked.isAtSameMomentAs(tomorrow);
   }
 
   /// ✔ Check if current time is past 14:00
