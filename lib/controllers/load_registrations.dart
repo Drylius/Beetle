@@ -44,16 +44,6 @@ class LoadRegistrations {
     // final minute = int.tryParse(parts[1]) ?? 0;
     // final fullDate = DateTime(now.year, now.month, now.day, hour, minute);
 
-    // // Create a 1-minute window to account for millisecond differences
-    // final startOfMinute = DateTime(
-    //   fullDate.year,
-    //   fullDate.month,
-    //   fullDate.day,
-    //   hour,
-    //   minute,
-    // );
-    // final endOfMinute = startOfMinute.add(const Duration(minutes: 1));
-
     // // 1. Lakukan Query untuk mendapatkan QuerySnapshot
     // final slotSnapshot = await _firestore
     //     .collection("shuttle_slots")

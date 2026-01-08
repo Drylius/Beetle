@@ -4,6 +4,8 @@ import 'package:beetle/models/shuttle_registration_model.dart';
 import 'package:beetle/models/shuttle_slot_model.dart';
 import 'package:beetle/models/shuttle_route_model.dart';
 import 'package:intl/intl.dart';
+import 'package:beetle/pages/livetracking/bus_tracking_screen.dart';
+
 import 'package:beetle/widgets/schedule_information.dart';
 
 class MyReservationScreen extends StatelessWidget {

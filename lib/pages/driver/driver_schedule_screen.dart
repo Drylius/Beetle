@@ -74,6 +74,7 @@ class _DriverScheduleScreenState extends State<DriverScheduleScreen> {
         child: OutlinedButton(
           onPressed: () {
             // Update the state only if the button is not already selected
+            
             if (_isTodaySelected != isTargetDayToday) {
               setState(() {
                 _isTodaySelected = isTargetDayToday;
@@ -202,19 +203,22 @@ class _DriverScheduleScreenState extends State<DriverScheduleScreen> {
                           // Displaying departure time
                           'Waktu Keberangkatan: ${_formatTime(slot.schedule.departureTime)}',
                         ),
-                        onTap: () {
-                          Navigator.push(
+                        onTap: () async {
+                          await Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => StatusScreen(
                                 schedule: slot.schedule,
-                                today:
-                                    _isTodaySelected, // Pass the driver ID to the next screen
-                                    slotId: slot.id,
+                                today: _isTodaySelected,
+                                slotId: slot.id,
                               ),
                             ),
                           );
+
+                          // refresh list after coming back (status might have changed)
+                          await _fetchSchedules();
                         },
+
                         trailing: Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 10,

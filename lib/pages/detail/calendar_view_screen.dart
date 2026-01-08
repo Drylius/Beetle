@@ -62,6 +62,7 @@ class _CalendarViewScreenState extends State<CalendarViewScreen> {
   /// ✔ Check if current time is past 14:00
   bool _isPastDeadline() {
     final now = DateTime.now();
+    
     return now.hour >= 14;
   }
 

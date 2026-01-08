@@ -1,6 +1,8 @@
 import 'package:beetle/controllers/load_registrations.dart';
 import 'package:beetle/models/shuttle_slot_model.dart';
 import 'package:flutter/material.dart';
+import 'package:beetle/pages/livetracking/bus_tracking_screen.dart';
+
 import 'package:beetle/widgets/schedule_information.dart';
 
 class ScheduleViewScreen extends StatefulWidget {
