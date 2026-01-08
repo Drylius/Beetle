@@ -118,10 +118,6 @@ class MyReservationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Center(child: Text("My Reservations")),
-        backgroundColor: Colors.teal,
-      ),
 
       // ✅ First stream: listen to user's reservations (real-time update)
       body: StreamBuilder<List<ShuttleRegistration>>(

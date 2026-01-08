@@ -10,12 +10,14 @@ class MainScreenUser extends StatefulWidget {
   MainScreenUser({
     super.key,
     // required this.appTitle
-    required this.userId
+    required this.userId,
+    this.index
     });
 
   // final String appTitle;
   final String userId;
   final shuttleRepository = ShuttleRepository();
+  final int? index;
 
  @override
   State<MainScreenUser> createState() {
@@ -25,7 +27,14 @@ class MainScreenUser extends StatefulWidget {
 
 class _MainScreenUserState extends State<MainScreenUser> {
   // int currentPageIndex = 0;
-  int _selectedIndex = 0;
+  late int _selectedIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    // 2. Assign the value here. At this point, 'widget' is fully accessible.
+    _selectedIndex = widget.index ?? 0;
+  }
 
   @override
   Widget build(BuildContext context) {

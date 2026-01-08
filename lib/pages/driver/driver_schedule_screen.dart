@@ -210,6 +210,7 @@ class _DriverScheduleScreenState extends State<DriverScheduleScreen> {
                                 schedule: slot.schedule,
                                 today:
                                     _isTodaySelected, // Pass the driver ID to the next screen
+                                    slotId: slot.id,
                               ),
                             ),
                           );

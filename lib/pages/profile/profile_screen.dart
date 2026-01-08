@@ -47,10 +47,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Center(child: const Text("My Profile")),
-        backgroundColor: Colors.teal,
-      ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _userData == null
