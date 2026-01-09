@@ -35,8 +35,9 @@ class _StatusScreenState extends State<StatusScreen> {
     );
   }
 
-  Future<void> _updateStatus(String slotId, String newStatus) async {
-    final bool confirm = await showDialog(
+  Future<bool> _updateStatus(String slotId, String newStatus) async {
+    final dynamic result = await showDialog(
+      // Gunakan dynamic atau bool?
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text("Confirm Action"),
@@ -56,7 +57,10 @@ class _StatusScreenState extends State<StatusScreen> {
       ),
     );
 
-    if (!confirm) return;
+    // Jika dialog ditutup tanpa klik (klik luar), result bisa null
+    final bool confirm = result ?? false;
+
+    if (!confirm) return false; // Kembalikan false jika batal
 
     await loader.updateSlotStatus(slotId, newStatus);
 
@@ -68,6 +72,8 @@ class _StatusScreenState extends State<StatusScreen> {
         widget.slotId,
       );
     });
+
+    return true; // Kembalikan true jika sukses update
   }
 
   Future<void> _openTracking(ShuttleSlot slot) async {
@@ -293,17 +299,25 @@ class _StatusScreenState extends State<StatusScreen> {
                         ),
                       ),
                       onPressed: () async {
-                        await _updateStatus(slot.id, "on the way");
-
-                        final updatedSlot = await loader.getSlotDetails(
-                          widget.schedule,
-                          widget.today,
-                          "",
-                          widget.slotId,
+                        // Simpan hasil kembalian dari _updateStatus
+                        bool success = await _updateStatus(
+                          slot.id,
+                          "on the way",
                         );
 
-                        if (!mounted) return;
-                        await _openTracking(updatedSlot);
+                        // JIKA sukses (user klik Confirm), baru jalankan kode di bawahnya
+                        if (success) {
+                          final updatedSlot = await loader.getSlotDetails(
+                            widget.schedule,
+                            widget.today,
+                            "",
+                            widget.slotId,
+                          );
+
+                          if (!mounted) return;
+                          await _openTracking(updatedSlot);
+                        }
+                        // JIKA success false, kode ini berhenti di sini dan tidak akan buka tracking.
                       },
                       child: const Text(
                         "Start Trip",

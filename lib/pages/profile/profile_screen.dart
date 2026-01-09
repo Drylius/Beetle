@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:beetle/repositories/auth_repository.dart';
 import 'package:beetle/models/user_model.dart';
+import '../auth/auth_wrapper.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -39,9 +40,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void logout() async {
     await _authRepo.signOut();
-    if (!mounted) return;
 
-    Navigator.pushNamedAndRemoveUntil(context, "/login", (_) => false);
+    // 2. Gunakan Navigator untuk membersihkan SEMUA screen lama
+    // dan kembali ke AuthWrapper sebagai pintu masuk utama.
+    if (context.mounted) {
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => const AuthWrapper()),
+        (route) => false, // Menghapus semua route sebelumnya
+      );
+    }
   }
 
   @override
